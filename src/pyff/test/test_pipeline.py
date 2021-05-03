@@ -61,7 +61,7 @@ class PipeLineTest(SignerTestCase):
         template = templates.get_template(pl_name)
         with open(pipeline, "w") as fd:
             fd.write(template.render(ctx=ctx))
-        res = plumbing(pipeline).process(md, PipeState(entry_name='batch'))
+        res = plumbing(pipeline).process(md, PipeState(conditions={'batch'}))
         os.unlink(pipeline)
         return res, md, ctx
 
@@ -70,7 +70,7 @@ class PipeLineTest(SignerTestCase):
         p = yaml.safe_load(six.StringIO(pstr))
         print("\n{}".format(yaml.dump(p)))
         pl = Plumbing(p, pid="test")
-        res = pl.process(md, PipeState(entry_name='batch'))
+        res = pl.process(md, PipeState(conditions={'batch'}))
         return res, md
 
     @classmethod

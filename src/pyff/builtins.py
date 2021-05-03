@@ -13,7 +13,7 @@ import traceback
 from copy import deepcopy
 from datetime import datetime
 from distutils.util import strtobool
-from typing import Dict, Optional
+from typing import Any, Dict, List, Optional
 
 import ipaddr
 import six
@@ -25,7 +25,7 @@ from pyff.constants import NS
 from pyff.decorators import deprecated
 from pyff.exceptions import MetadataException
 from pyff.logs import get_log
-from pyff.pipes import PipeException, PipeState, PipelineCallback, Plumbing, pipe, registry
+from pyff.pipes import PipeException, PipelineCallback, Plumbing, pipe, registry
 from pyff.samlmd import (
     annotate_entity,
     discojson_t,
@@ -383,13 +383,20 @@ def when(req: Plumbing.Request, condition: str, *values):
     The condition operates on the state: if 'foo' is present in the state (with any value), then the something branch is
     followed. If 'bar' is present in the state with the value 'bill' then the other branch is followed.
     """
-    if req.state.entry_name is None:
-        log.debug(f'Condition {repr(condition)} not present in state {req.state}')
-    if req.state.entry_name is not None and (not values or _any(values, req.state.entry_name)):
+    log.debug(f'"when" called for condition "{condition}", values {values}, state {req.state}')
+    c: Any = None
+    if condition in req.state.conditions:
+        c = True
+    if condition == 'accept':
+        c = req.state.accept
+    if c is not None and (not values or _any(values, c)):
         if not isinstance(req.args, list):
             raise ValueError('Non-list arguments to "when" not allowed')
 
-        return Plumbing(pipeline=req.args, pid=f'{req.plumbing.id}.when').iprocess(req)
+        _pid = f'{req.plumbing.id}.when'
+        log.debug(f'Creating new plumbing: {_pid}, pipeline {req.args}')
+        return Plumbing(pipeline=req.args, pid=_pid).iprocess(req)
+    log.debug(f'Continuing on plumbing {req.id}')
     return req.t
 
 

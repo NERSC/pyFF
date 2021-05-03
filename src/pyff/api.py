@@ -289,7 +289,7 @@ def process_handler(request: Request) -> Response:
     try:
         for p in request.registry.plumbings:
             state = PipeState(
-                entry_name=entry,
+                conditions={entry},
                 headers={'Content-Type': None},
                 accept=accept,
                 url=request.current_route_url(),

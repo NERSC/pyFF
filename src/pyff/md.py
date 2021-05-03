@@ -8,7 +8,7 @@ import sys
 import traceback
 
 from pyff.constants import config, parse_options
-from pyff.pipes import plumbing
+from pyff.pipes import PipeState, plumbing
 from pyff.repo import MDRepository
 
 
@@ -30,7 +30,7 @@ def main():
     try:
         md = MDRepository()
         for p in args:
-            plumbing(p).process(md, state={'batch': True, 'stats': {}})
+            plumbing(p).process(md, state=PipeState(conditions={'batch'}))
         sys.exit(0)
     except Exception as ex:
         logging.debug(traceback.format_exc())

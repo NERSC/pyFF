@@ -7,8 +7,7 @@ from __future__ import annotations
 import functools
 import os
 import traceback
-from typing import Any, Callable, Dict, Iterable, List, Optional, TYPE_CHECKING, Tuple, Type
-from typing import Union
+from typing import Any, Callable, Dict, Iterable, List, Optional, Set, TYPE_CHECKING, Tuple, Type, Union
 
 import yaml
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -177,7 +176,7 @@ class PipelineCallback(object):
         if not isinstance(state, PipeState):
             raise ValueError(f'PipelineCallback called with invalid state ({type(state)}')
         try:
-            state.entry_name = self.entry_point
+            state.conditions.add(self.entry_point)
             log.debug("state: {}".format(state))
             return self.plumbing.process(self.req.md, store=self.store, state=state, t=t)
         except Exception as ex:
@@ -187,14 +186,13 @@ class PipelineCallback(object):
 
 
 class PipeState(BaseModel):
-    batch: bool = False
-    entry_name: Optional[str] = None
+    conditions: Set[str] = Field(set())
     headers: Dict[str, Any] = Field({})
     accept: Any = None  # TODO: Re-arrange classes so that type 'MediaAccept' works
     url: str = ''
-    select: str = ''
-    match: str = ''
-    path: str = ''
+    select: Optional[str] = None
+    match: Optional[str] = None
+    path: Optional[str] = None
     stats: Dict[str, Any] = Field({})
     cache: int = 0  # cache_ttl
 

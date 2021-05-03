@@ -13,7 +13,7 @@ import traceback
 from copy import deepcopy
 from datetime import datetime
 from distutils.util import strtobool
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Iterable, List, Optional
 
 import ipaddr
 import six
@@ -274,10 +274,10 @@ def fork(req: Plumbing.Request, *opts):
 
 @deprecated(reason="any pipeline has been replace by other behaviour")
 @pipe(name='any')
-def _any(lst, d):
+def _any(lst: Iterable[Any], d: Any) -> Any:
     for x in lst:
         if x in d:
-            if type(d) == dict:
+            if isinstance(d, dict):
                 return d[x]
             else:
                 return True
@@ -695,19 +695,25 @@ def _select_args(req: Plumbing.Request) -> List[str]:
                 raise ValueError(f'Selection not possible with arg that is not a string: {this}')
             args += [this]
 
-    if args is None and req.state.select:
+    if not args and req.state.select:
         args = [req.state.select]
         log.debug(f'Using req.state.select: {args}')
-    if args is None:
+    if not args:
         args = req.store.collections()
         log.debug(f'Using req.store.collections: {args}')
-    if args is None or not args:
+    if not args:
         args = req.store.lookup('entities')
-        log.debug(f'Using req.store.entities: {args}')
-    if args is None or not args:
+        if len(args) < 5:
+            log.debug(f'Using req.store.entities: {args}')
+        else:
+            log.debug(f'Using req.store.entities: {args[:4]} (truncated)')
+    if not args:
         args = []
 
-    log.info(f'selecting using args: {args}')
+    if len(args) < 5:
+        log.info(f'selecting using args: {args}')
+    else:
+        log.info(f'selecting using args: {args[:4]} (truncated)')
 
     return args
 

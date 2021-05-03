@@ -300,7 +300,6 @@ def process_handler(request: Request) -> Response:
             )
 
             r = p.process(request.registry.md, state=state, raise_exceptions=True, scheduler=request.registry.scheduler)
-            log.debug(f'Plumbing process result: {r}')
             if r is None:
                 r = []
 

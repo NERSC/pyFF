@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from distutils.util import strtobool
 from io import BytesIO
 from itertools import chain
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Sequence, Union
 
 from lxml import etree
 from lxml.builder import ElementMaker
@@ -364,7 +364,7 @@ def filter_or_validate(
     return t
 
 
-def resolve_entities(entities, lookup_fn=None):
+def resolve_entities(entities: Sequence[str], lookup_fn: str = None) -> List[Element]:
     """
 
     :param entities: a set of entities specifiers (lookup is used to find entities from this set)
@@ -384,7 +384,7 @@ def resolve_entities(entities, lookup_fn=None):
             entity_id = entity.get('entityID', None)
             if entity is not None and entity_id is not None:
                 resolved_entities[entity_id] = entity
-    return resolved_entities.values()
+    return list(resolved_entities.values())
 
 
 def entitiesdescriptor(

@@ -96,7 +96,8 @@ if __name__ == '__main__':
 
 def _pstart(args, outf=None, ignore_exit=False):
     env = {}
-    logging.debug(" ".join(args))
+    _cmdstr = ' '.join(args)
+    logging.debug(f'Invoking external command via pipe: {_cmdstr}')
     proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
     return proc
 
@@ -105,13 +106,14 @@ def _p(args, outf=None, ignore_exit=False):
     proc = _pstart(args)
     out, err = proc.communicate()
     if err is not None and len(err) > 0:
-        logging.error(err)
+        logging.error(f'stderr from command: {err}')
     if outf is not None:
         with open(outf, "w") as fd:
             fd.write(out.decode('UTF-8'))
     else:
         if out is not None and len(out) > 0:
-            logging.debug(out.decode('UTF-8'))
+            _outstr = out.decode('UTF-8')
+            logging.debug(f'stdout from command: {_outstr}')
     rv = proc.wait()
     if rv and not ignore_exit:
         raise RuntimeError("command exited with code != 0: %d" % rv)

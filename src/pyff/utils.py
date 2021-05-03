@@ -18,7 +18,6 @@ import tempfile
 import threading
 import time
 import traceback
-from _collections_abc import Mapping, MutableMapping
 from copy import copy
 from datetime import datetime, timedelta, timezone
 from email.utils import parsedate
@@ -30,6 +29,7 @@ from typing import Any, BinaryIO, Callable, Dict, List, Optional, Sequence, Set,
 import pkg_resources
 import requests
 import xmlsec
+from _collections_abc import Mapping, MutableMapping
 from apscheduler.executors.pool import ThreadPoolExecutor
 from apscheduler.jobstores.memory import MemoryJobStore
 from apscheduler.jobstores.redis import RedisJobStore

@@ -1,10 +1,13 @@
 import random
+from typing import Iterable, Optional
+
+from lxml.etree import Element
 
 from pyff.constants import NS, config
 from pyff.logs import get_log
 from pyff.resource import Resource, ResourceOpts
 from pyff.samlmd import entitiesdescriptor, root
-from pyff.store import make_icon_store_instance, make_store_instance
+from pyff.store import SAMLStoreBase, make_icon_store_instance, make_store_instance
 from pyff.utils import is_text, make_default_scheduler
 
 log = get_log(__name__)
@@ -43,17 +46,14 @@ class MDRepository:
         log.debug("calling store lookup %s" % member)
         return store.lookup(member)
 
-    def lookup(self, member, xp=None, store=None):
+    def lookup(self, member: str, xp: str = None, store: Optional[SAMLStoreBase] = None) -> Iterable[Element]:
         """
         Lookup elements in the working metadata repository
 
         :param member: A selector (cf below)
-        :type member: basestring
         :param xp: An optional xpath filter
-        :type xp: basestring
         :param store: the store to operate on
         :return: An iterable of EntityDescriptor elements
-        :rtype: etree.Element
 
 
         **Selector Syntax**
@@ -67,7 +67,7 @@ class MDRepository:
         The first form results in the intersection of the results of doing a lookup on the selectors. The second form
         results in the EntityDescriptor elements from the source (defaults to all EntityDescriptors) that match the
         xpath expression. The attribute-value forms results in the EntityDescriptors that contain the specified entity
-        attribute pair. If non of these forms apply, the lookup is done using either source ID (normally @Name from
+        attribute pair. If none of these forms apply, the lookup is done using either source ID (normally @Name from
         the EntitiesDescriptor) or the entityID of single EntityDescriptors. If member is a URI but isn't part of
         the metadata repository then it is fetched an treated as a list of (one per line) of selectors. If all else
         fails an empty list is returned.

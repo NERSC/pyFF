@@ -11,7 +11,7 @@ from collections import deque
 from datetime import datetime
 from enum import Enum
 from threading import Condition, Lock
-from typing import Any, Callable, Deque, Dict, Iterable, List, Mapping, Optional, TYPE_CHECKING, Tuple
+from typing import TYPE_CHECKING, Any, Callable, Deque, Dict, Iterable, List, Mapping, Optional, Tuple
 from urllib.parse import quote as urlescape
 
 import requests

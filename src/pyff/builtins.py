@@ -512,7 +512,7 @@ def publish(req: Plumbing.Request, *opts):
         try:
             validate_document(req.t)
         except DocumentInvalid as ex:
-            log.error(ex.error_log)
+            log.error(f'Got an error from validate_document {ex.error_log}')
             raise PipeException("XML schema validation failed")
 
     def _nop(x):

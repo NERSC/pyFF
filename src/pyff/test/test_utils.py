@@ -8,6 +8,7 @@ import six
 
 from pyff import utils
 from pyff.constants import NS, as_list_of_string
+from pyff.merge_strategies import remove, replace_existing
 from pyff.resource import Resource, ResourceOpts
 from pyff.samlmd import entities_list, find_entity
 from pyff.utils import (
@@ -23,8 +24,6 @@ from pyff.utils import (
     schema,
     url_get,
 )
-
-from pyff.merge_strategies import remove, replace_existing
 
 
 class TestMetadata(TestCase):

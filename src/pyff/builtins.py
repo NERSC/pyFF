@@ -685,18 +685,26 @@ def load(req: Plumbing.Request, *opts):
     req.md.rm.reload(fail_on_error=bool(_opts['fail_on_error']))
 
 
-def _select_args(req):
+def _select_args(req: Plumbing.Request) -> List[str]:
+    log.debug(f'Select args: {req.args}, state: {req.state}')
     args = req.args
-    if args is None and 'select' in req.state:
-        args = [req.state.get('select')]
+    if args is None and req.state.select:
+        args = [req.state.select]
+        log.debug(f'Using req.state.select: {args}')
     if args is None:
         args = req.store.collections()
+        log.debug(f'Using req.store.collections: {args}')
     if args is None or not args:
         args = req.store.lookup('entities')
+        log.debug(f'Using req.store.entities: {args}')
     if args is None or not args:
         args = []
 
-    log.info("selecting using args: %s" % args)
+    log.info(f'selecting using args: {args}')
+
+    for this in args:
+        if not isinstance(this, str):
+            raise ValueError(f'Selection resulted in something that is not a string: {this}')
 
     return args
 

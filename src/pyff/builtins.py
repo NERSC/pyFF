@@ -687,7 +687,14 @@ def load(req: Plumbing.Request, *opts):
 
 def _select_args(req: Plumbing.Request) -> List[str]:
     log.debug(f'Select args: {req.args}, state: {req.state}')
-    args = req.args
+    args: List[str] = []
+
+    if req.args:
+        for this in req.args:
+            if not isinstance(this, str):
+                raise ValueError(f'Selection not possible with arg that is not a string: {this}')
+            args += [this]
+
     if args is None and req.state.select:
         args = [req.state.select]
         log.debug(f'Using req.state.select: {args}')
@@ -701,10 +708,6 @@ def _select_args(req: Plumbing.Request) -> List[str]:
         args = []
 
     log.info(f'selecting using args: {args}')
-
-    for this in args:
-        if not isinstance(this, str):
-            raise ValueError(f'Selection resulted in something that is not a string: {this}')
 
     return args
 

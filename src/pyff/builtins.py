@@ -758,10 +758,14 @@ def select(req, *opts):
 
             if q is not None and len(q) > 0:
                 tokens = _strings(elt)
-                p = re.compile(r'\b{}'.format(q))
+                pat = r'\b{}'.format(q)
+                p = re.compile(pat, re.IGNORECASE)
                 for tstr in tokens:
                     if p.search(tstr):
+                        log.debug("Found '{}' in '{}'".format(pat, tstr))
                         return tstr
+                    else:
+                        log.debug("Didn't find '{}' in '{}'".format(pat, tstr))
             return None
 
         log.debug("matching {} in {} entities".format(match, len(entities)))
